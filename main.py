@@ -26,21 +26,21 @@ app.include_router(create_league_router, prefix=settings.API_PREFIX)
 @app.get("/")
 async def root():
     """Endpoint raiz da API."""
-    return {{
+    return {
         "message": "H2H Predictor API",
         "version": settings.VERSION,
-        "endpoints": {{
+        "endpoints": {
             "leagues": f"{settings.API_PREFIX}/leagues",
             "teams": f"{settings.API_PREFIX}/teams/{{league_id}}",
             "h2h": f"{settings.API_PREFIX}/h2h"
-        }}
-    }}
+        }
+    }
 
 
 @app.get("/health")
 async def health():
     """Endpoint de health check."""
-    return {{"status": "healthy"}}
+    return {"status": "healthy"}
 
 
 if __name__ == "__main__":
