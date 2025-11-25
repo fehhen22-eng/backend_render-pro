@@ -1,0 +1,2 @@
+team_name;matches_played;home_matches;away_matches;ppg_home;ppg_away;ppg_total;gf_home;gf_away;gf_total;gf_avg_home;gf_avg_away;gf_avg_total;ga_home;ga_away;ga_total;ga_avg_home;ga_avg_away;ga_avg_total;over15;over25;over35;under15;under25;btts_yes;btts_no;corners_for_home;corners_for_away;corners_for_avg;corners_against_home;corners_against_away;corners_against_avg;total_corners_avg
+Parma;11;6;5;1.0;0.4;0.73;6;1;7;1.0;0.2;0.64;8;6;14;1.33;1.2;1.27;0.64;0.36;0.18;0.36;0.64;0.45;0.55;2.83;3.2;3.0;4.17;5.0;4.55;7.55
