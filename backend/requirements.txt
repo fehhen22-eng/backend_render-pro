@@ -1,6 +1,7 @@
-fastapi
-uvicorn
-pandas
-python-multipart
-apscheduler
-requests
+fastapi==0.110.0
+uvicorn==0.23.2
+pandas==2.1.0
+python-multipart==0.0.9
+aiohttp==3.9.1
+beautifulsoup4==4.12.2
+requests==2.32.3
