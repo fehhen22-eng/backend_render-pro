@@ -1,159 +1,82 @@
 import pandas as pd
-from typing import Dict, List, Optional, Tuple
+from typing import Dict, Optional, Tuple
 from app.utils.file_manager import load_team_data
-
 from app.utils.team_normalizer import normalize_team_name
 
 
 class H2HAnalyzer:
     """Analisador de confrontos diretos (Head to Head)."""
-    
-    def analyze_h2h(
-        self,
-        league_id: str,
-        team1_id: str,
-        team2_id: str
-    ) -> Dict:
+
+    def analyze_h2h(self, league_id: str, team1_id: str, team2_id: str) -> Dict:
         """
-        Analisa o confronto entre dois times.
+        Faz análise do confronto H2H entre dois times.
         """
-        # Carrega dados dos times
+
+        # Carrega dados CSV dos times
         df1 = load_team_data(league_id, team1_id)
         df2 = load_team_data(league_id, team2_id)
-        
+
         if df1 is None or df2 is None:
-            return {
-                "error": "Dados de um ou ambos os times não encontrados"
-            }
-        
-        # Análise geral
+            return {"error": "Dados de um ou ambos os times não encontrados."}
+
+        # Processamento de estatísticas
         team1_stats = self._calculate_team_stats(df1, team1_id)
         team2_stats = self._calculate_team_stats(df2, team2_id)
-        
+
         # Probabilidades
         probabilities = self._calculate_probabilities(team1_stats, team2_stats)
-        
+
         # Over/Under
         over_under = self._calculate_over_under(team1_stats, team2_stats)
-        
-        # BTTS (Both Teams To Score)
+
+        # BTTS
         btts = self._calculate_btts(team1_stats, team2_stats)
-        
-        # Escanteios
-        corners = self._calculate_corners(team1_stats, team2_stats)
-        
-        # Chutes
-        shots = self._calculate_shots(team1_stats, team2_stats)
-        
-        # Cartões
-        cards = self._calculate_cards(team1_stats, team2_stats)
-        
-        # Handicap Asiático
-        asian_handicap = self._calculate_asian_handicap(team1_stats, team2_stats)
-        
+
         return {
-            "team1": {
-                "id": team1_id,
-                "name": team1_id.replace("-", " ").title(),
-                "stats": team1_stats
-            },
-            "team2": {
-                "id": team2_id,
-                "name": team2_id.replace("-", " ").title(),
-                "stats": team2_stats
+            "teams": {
+                "team1": team1_stats,
+                "team2": team2_stats
             },
             "probabilities": probabilities,
             "over_under": over_under,
-            "btts": btts,
-            "corners": corners,
-            "shots": shots,
-            "cards": cards,
-            "asian_handicap": asian_handicap
+            "btts": btts
         }
-    
+
+    # ---------------------------------------------
+    # FUNÇÕES INTERNAS
+    # ---------------------------------------------
+
     def _calculate_team_stats(self, df: pd.DataFrame, team_id: str) -> Dict:
-        """Calcula estatísticas de um time."""
-        team_normalized = normalize_team_name(team_id)
-        
-        stats = {
-            "matches_played": 0,
-            "goals_scored": 0,
-            "goals_conceded": 0,
-            "wins": 0,
-            "draws": 0,
-            "losses": 0,
-            "corners_for": 0,
-            "corners_against": 0,
-            "shots_for": 0,
-            "shots_against": 0,
-            "shots_on_target_for": 0,
-            "shots_on_target_against": 0,
-            "yellow_cards": 0,
-            "red_cards": 0,
+        """Cálculo simples de estatísticas do time."""
+        total_jogos = len(df)
+        avg_gf = df["gf"].mean() if "gf" in df else 0
+        avg_ga = df["ga"].mean() if "ga" in df else 0
+
+        return {
+            "team_id": team_id,
+            "games": total_jogos,
+            "avg_gf": round(avg_gf, 2),
+            "avg_ga": round(avg_ga, 2),
         }
-        
-        for _, match in df.iterrows():
-            home_team_normalized = normalize_team_name(str(match.get("home_team", "")))
-            away_team_normalized = normalize_team_name(str(match.get("away_team", "")))
-            
-            home_goals = int(match.get("home_goals", 0) or 0)
-            away_goals = int(match.get("away_goals", 0) or 0)
-            
-            is_home = team_normalized in home_team_normalized or home_team_normalized in team_normalized
-            is_away = team_normalized in away_team_normalized or away_team_normalized in team_normalized
-            
-            if not is_home and not is_away:
-                continue
-            
-            if is_home and is_away:
-                is_away = False
-            
-            stats["matches_played"] += 1
-            
-            if is_home:
-                stats["goals_scored"] += home_goals
-                stats["goals_conceded"] += away_goals
-                stats["corners_for"] += int(match.get("home_corners", 0) or 0)
-                stats["corners_against"] += int(match.get("away_corners", 0) or 0)
-                stats["shots_for"] += int(match.get("home_shots", 0) or 0)
-                stats["shots_against"] += int(match.get("away_shots", 0) or 0)
-                stats["shots_on_target_for"] += int(match.get("home_shots_on_target", 0) or 0)
-                stats["shots_on_target_against"] += int(match.get("away_shots_on_target", 0) or 0)
-                stats["yellow_cards"] += int(match.get("home_yellow_cards", 0) or 0)
-                stats["red_cards"] += int(match.get("home_red_cards", 0) or 0)
-                
-                if home_goals > away_goals:
-                    stats["wins"] += 1
-                elif home_goals == away_goals:
-                    stats["draws"] += 1
-                else:
-                    stats["losses"] += 1
-            else:
-                stats["goals_scored"] += away_goals
-                stats["goals_conceded"] += home_goals
-                stats["corners_for"] += int(match.get("away_corners", 0) or 0)
-                stats["corners_against"] += int(match.get("home_corners", 0) or 0)
-                stats["shots_for"] += int(match.get("away_shots", 0) or 0)
-                stats["shots_against"] += int(match.get("home_shots", 0) or 0)
-                stats["shots_on_target_for"] += int(match.get("away_shots_on_target", 0) or 0)
-                stats["shots_on_target_against"] += int(match.get("home_shots_on_target", 0) or 0)
-                stats["yellow_cards"] += int(match.get("away_yellow_cards", 0) or 0)
-                stats["red_cards"] += int(match.get("away_red_cards", 0) or 0)
-                
-                if away_goals > home_goals:
-                    stats["wins"] += 1
-                elif away_goals == home_goals:
-                    stats["draws"] += 1
-                else:
-                    stats["losses"] += 1
-        
-        if stats["matches_played"] > 0:
-            stats["avg_goals_scored"] = round(stats["goals_scored"] / stats["matches_played"], 2)
-            stats["avg_goals_conceded"] = round(stats["goals_conceded"] / stats["matches_played"], 2)
-            stats["avg_corners_for"] = round(stats["corners_for"] / stats["matches_played"], 2)
-            stats["avg_corners_against"] = round(stats["corners_against"] / stats["matches_played"], 2)
-            stats["avg_shots_for"] = round(stats["shots_for"] / stats["matches_played"], 2)
-            stats["avg_shots_against"] = round(stats["shots_against"] / stats["matches_played"], 2)
-            stats["avg_yellow_cards"] = round(stats["yellow_cards"] / stats["matches_played"], 2)
-        
-        return stats
+
+    def _calculate_probabilities(self, t1: Dict, t2: Dict) -> Dict:
+        """Cálculo básico de probabilidade por média de gols."""
+        total = (t1["avg_gf"] + t2["avg_gf"]) or 1
+        p1 = t1["avg_gf"] / total
+        p2 = t2["avg_gf"] / total
+
+        return {
+            "home_win": round(p1 * 100, 2),
+            "away_win": round(p2 * 100, 2),
+            "draw": 100 - round((p1 + p2) * 100, 2)
+        }
+
+    def _calculate_over_under(self, t1: Dict, t2: Dict) -> Dict:
+        media = t1["avg_gf"] + t2["avg_gf"]
+        return {
+            "over_1_5": media > 1.5,
+            "over_2_5": media > 2.5,
+        }
+
+    def _calculate_btts(self, t1: Dict, t2: Dict) -> bool:
+        return (t1["avg_gf"] > 1.0) and (t2["avg_gf"] > 1.0)
