@@ -26,7 +26,7 @@ def list_leagues() -> List[dict]:
         if item.is_dir():
             league_id = item.name
             leagues.append({
-                "league_id": league_id,
+                "id": league_id,                      # 🔥 Corrigido
                 "name": league_id.replace("-", " ").title()
             })
 
@@ -43,7 +43,7 @@ def list_teams(league_id: str) -> List[dict]:
     for csv_file in sorted(league_path.glob("*.csv")):
         team_id = csv_file.stem
         teams.append({
-            "team_id": team_id,
+            "id": team_id,                           # 🔥 Corrigido
             "name": team_id.replace("-", " ").title()
         })
 
@@ -58,7 +58,6 @@ def load_team_data(league_id: str, team_id: str) -> Optional[pd.DataFrame]:
         return None
 
     try:
-        # lê CSV com ; ou ,
         df = pd.read_csv(csv_path, sep=";|,", engine="python")
         return df
     except Exception as e:
@@ -71,7 +70,6 @@ def save_team_csv(league_id: str, filename: str, file_bytes: bytes) -> str:
     league_path = get_leagues_path() / league_id
     league_path.mkdir(parents=True, exist_ok=True)
 
-    # normaliza nome
     cleaned = slugify(filename.replace(".csv", "")) + ".csv"
     dest = league_path / cleaned
 
