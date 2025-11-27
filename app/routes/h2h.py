@@ -1,8 +1,10 @@
 from fastapi import APIRouter, HTTPException, Body
 from typing import Dict
 from pydantic import BaseModel
-from services.h2h_analyzer import h2h_analyzer
-from services.update_csv import update_service
+
+from app.services.h2h_analyzer import h2h_analyzer
+from app.services.update_csv import update_service
+
 
 
 router = APIRouter(prefix="/h2h", tags=["h2h"])
