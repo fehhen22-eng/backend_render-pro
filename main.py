@@ -1,46 +1,30 @@
-import sys
-from pathlib import Path
-
-# --- Corrige caminho para reconhecer o diretório raiz ---
-BASE_DIR = Path(__file__).resolve().parent.parent
-if str(BASE_DIR) not in sys.path:
-    sys.path.insert(0, str(BASE_DIR))
-
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from config.settings import settings
 
-# ROTAS
-from app.routes import leagues, teams, h2h
-from app.routes.create_league import router as create_league_router
+# IMPORTAÇÕES CERTAS
+from app.routes.h2h import router as h2h_router
+from app.routes.leagues import router as leagues_router
+from app.routes.teams import router as teams_router
 
 app = FastAPI(
-    title=settings.PROJECT_NAME,
-    version=settings.VERSION
+    title="H2H Predictor Backend",
+    version="1.0.0",
 )
 
 # CORS
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
-    allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
-# Rotas da API
-app.include_router(leagues.router, prefix=settings.API_PREFIX)
-app.include_router(teams.router, prefix=settings.API_PREFIX)
-app.include_router(h2h.router, prefix=settings.API_PREFIX)
-app.include_router(create_league_router, prefix=settings.API_PREFIX)
+# ROTAS
+app.include_router(h2h_router, prefix="/h2h")
+app.include_router(leagues_router, prefix="/leagues")
+app.include_router(teams_router, prefix="/teams")
+
 
 @app.get("/")
 def root():
-    return {
-        "message": "H2H Predictor API",
-        "version": settings.VERSION
-    }
-
-@app.get("/health")
-def health():
-    return {"status": "healthy"}
+    return {"message": "Backend H2H Predictor ONLINE"}
