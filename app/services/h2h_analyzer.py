@@ -1,6 +1,7 @@
 import pandas as pd
 from typing import Dict, List, Optional, Tuple
-from utils.file_manager import load_team_data
+from app.utils.file_manager import load_team_data
+
 from utils.team_normalizer import normalize_team_name
 
 
