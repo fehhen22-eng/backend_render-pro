@@ -93,3 +93,20 @@ def save_team_data(league_id: str, team_id: str, df: pd.DataFrame) -> bool:
     except Exception as e:
         print(f"Erro ao salvar dados do time {team_id}: {e}")
         return False
+        def save_team_data(league_id: str, team_id: str, df) -> bool:
+    """
+    Salva o DataFrame do Sofascore em CSV dentro de data/leagues/{league}/{team}.csv
+    """
+    league_path = LEAGUES_DIR / league_id
+    league_path.mkdir(parents=True, exist_ok=True)
+
+    filename = f"{team_id}.csv"
+    filepath = league_path / filename
+
+    try:
+        df.to_csv(filepath, index=False, sep=";")
+        return True
+    except Exception as e:
+        print(f"Erro ao salvar CSV de {team_id}: {e}")
+        return False
+
