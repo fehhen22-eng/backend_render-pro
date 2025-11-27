@@ -1,7 +1,6 @@
 from fastapi import APIRouter, HTTPException
 from typing import List, Dict
-from app.utils.file_manager import list_leagues
-
+from utils.file_manager import list_leagues
 
 router = APIRouter(prefix="/leagues", tags=["leagues"])
 
