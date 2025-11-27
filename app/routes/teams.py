@@ -1,6 +1,6 @@
 from fastapi import APIRouter, HTTPException, Path, UploadFile, File
 from typing import List, Dict
-from utils.file_manager import list_teams, save_team_csv
+from app.utils.file_manager import list_teams, save_team_csv
 
 router = APIRouter(prefix="/teams", tags=["teams"])
 
