@@ -1,8 +1,8 @@
 from fastapi import APIRouter, HTTPException, Body
 from typing import Dict
 from pydantic import BaseModel
-from app.services.h2h_analyzer import h2h_analyzer
-from app.services.update_csv import update_service
+from services.h2h_analyzer import h2h_analyzer
+from services.update_csv import update_service
 
 
 router = APIRouter(prefix="/h2h", tags=["h2h"])
@@ -27,12 +27,6 @@ async def analyze_h2h(
 ):
     """
     Analisa o confronto entre dois times.
-    
-    Args:
-        request: Dados da requisição contendo league_id, team1_id e team2_id
-    
-    Returns:
-        Análise completa do confronto com estatísticas e probabilidades.
     """
     try:
         analysis = h2h_analyzer.analyze_h2h(
@@ -57,12 +51,6 @@ async def update_team_data(
 ):
     """
     Atualiza os dados de um time específico do Sofascore.
-    
-    Args:
-        request: Dados da requisição contendo league_id e team_id
-    
-    Returns:
-        Status da atualização.
     """
     try:
         success = await update_service.update_team(
@@ -90,12 +78,6 @@ async def update_team_data(
 async def update_league_data(league_id: str):
     """
     Atualiza os dados de todos os times de uma liga.
-    
-    Args:
-        league_id: ID da liga
-    
-    Returns:
-        Resultado da atualização com times atualizados e falhas.
     """
     try:
         result = await update_service.update_league(league_id)
@@ -113,9 +95,6 @@ async def update_league_data(league_id: str):
 async def update_all_data():
     """
     Atualiza os dados de todos os times de todas as ligas.
-    
-    Returns:
-        Resultado completo da atualização.
     """
     try:
         result = await update_service.update_all_teams()
