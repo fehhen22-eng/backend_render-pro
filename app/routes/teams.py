@@ -1,6 +1,6 @@
 from fastapi import APIRouter, HTTPException, Path, UploadFile, File
 from typing import List, Dict
-from app.utils.file_manager import list_teams, save_team_csv
+from utils.file_manager import list_teams, save_team_csv
 
 router = APIRouter(prefix="/teams", tags=["teams"])
 
@@ -26,7 +26,6 @@ async def get_teams(
         raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Erro ao listar times: {str(e)}")
-
 
 
 @router.post("/{league_id}/upload")
