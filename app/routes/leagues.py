@@ -1,6 +1,6 @@
 from fastapi import APIRouter, HTTPException
 from typing import List, Dict
-from utils.file_manager import list_leagues
+from app.utils.file_manager import list_leagues
 
 router = APIRouter(prefix="/leagues", tags=["leagues"])
 
@@ -9,9 +9,6 @@ router = APIRouter(prefix="/leagues", tags=["leagues"])
 async def get_leagues():
     """
     Lista todas as ligas disponíveis.
-    
-    Returns:
-        Lista de ligas com id e nome.
     """
     try:
         leagues = list_leagues()
