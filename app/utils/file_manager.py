@@ -2,7 +2,7 @@ import os
 from pathlib import Path
 from typing import List, Optional
 import pandas as pd
-from utils.team_normalizer import slugify
+from app.utils.team_normalizer import slugify
 
 
 def get_data_path() -> Path:
@@ -26,7 +26,7 @@ def list_leagues() -> List[dict]:
         if item.is_dir():
             league_id = item.name
             leagues.append({
-                "id": league_id,                      # 🔥 Corrigido
+                "league_id": league_id,
                 "name": league_id.replace("-", " ").title()
             })
 
@@ -43,7 +43,7 @@ def list_teams(league_id: str) -> List[dict]:
     for csv_file in sorted(league_path.glob("*.csv")):
         team_id = csv_file.stem
         teams.append({
-            "id": team_id,                           # 🔥 Corrigido
+            "team_id": team_id,
             "name": team_id.replace("-", " ").title()
         })
 
@@ -66,7 +66,7 @@ def load_team_data(league_id: str, team_id: str) -> Optional[pd.DataFrame]:
 
 
 def save_team_csv(league_id: str, filename: str, file_bytes: bytes) -> str:
-    """Salva um arquivo CSV enviado (upload manual)."""
+    """Salva um arquivo CSV enviado via upload."""
     league_path = get_leagues_path() / league_id
     league_path.mkdir(parents=True, exist_ok=True)
 
